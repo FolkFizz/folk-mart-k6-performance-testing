@@ -91,6 +91,32 @@ npm run cloud:run -- k6/tests/load.test.js
 npm run cloud:run:local -- k6/tests/load.test.js
 ```
 
+Cloud scripts auto-load `.env` and pass variables to k6 runtime.
+
+Simplest one-command suite (recommended for demos/recruiters):
+
+```bash
+npm run cloud:suite:quick
+```
+
+Preview commands only (no real execution):
+
+```bash
+npm run cloud:suite:quick:dry
+```
+
+Run full suite:
+
+```bash
+npm run cloud:suite:full
+```
+
+After each suite run, a report file is generated at:
+
+```text
+reports/campaign_YYYYMMDD_HHMMSS.md
+```
+
 ## Environment Variables
 
 Copy `.env.example` and set values in your shell or CI.
