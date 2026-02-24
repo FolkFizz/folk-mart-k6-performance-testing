@@ -1,0 +1,15 @@
+{
+  "name": "folk-mart-k6-performance-testing",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Minimal k6 performance test suite for Folk Mart",
+  "scripts": {
+    "test:smoke": "k6 run k6/tests/smoke.test.js",
+    "test:load": "k6 run k6/tests/load.test.js",
+    "test:stress": "k6 run k6/tests/stress.test.js",
+    "test:spike": "k6 run k6/tests/spike.test.js",
+    "test:soak": "k6 run k6/tests/soak.test.js",
+    "test:cart-checkout": "k6 run k6/tests/cart-checkout.test.js",
+    "test:race": "k6 run k6/tests/race-condition.test.js"
+  }
+}

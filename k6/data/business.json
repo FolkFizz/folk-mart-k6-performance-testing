@@ -1,0 +1,21 @@
+{
+  "couponCode": "WELCOME10",
+  "billing": {
+    "name": "QA User",
+    "address": "123 Test Lane, QA City"
+  },
+  "payment": {
+    "cardNumber": "4242 4242 4242 4242",
+    "expMonth": "12",
+    "expYear": "35",
+    "cvv": "123"
+  },
+  "queries": {
+    "catalogSmoke": "sort=price_asc&limit=5",
+    "catalogBrowse": "sort=newest&limit=24",
+    "catalogFilter": "category=fragrances&sort=price_desc&limit=10"
+  },
+  "products": {
+    "raceStockProductId": 1
+  }
+}
