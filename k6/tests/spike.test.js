@@ -1,11 +1,12 @@
 import { envNumber, envString } from "../config/env.js";
+import { withCloudOptions } from "../config/options.js";
 import { BROWSE_THRESHOLDS } from "../config/thresholds.js";
 import { browseJourney } from "../scenarios/browse.scenario.js";
 
 const baselineVus = envNumber("SPIKE_BASELINE_VUS", 5);
 const targetVus = envNumber("SPIKE_TARGET_VUS", 80);
 
-export const options = {
+const baseOptions = {
   stages: [
     { duration: envString("SPIKE_WARMUP", "1m"), target: baselineVus },
     { duration: envString("SPIKE_RAMP_UP", "20s"), target: targetVus },
@@ -16,6 +17,8 @@ export const options = {
   ],
   thresholds: BROWSE_THRESHOLDS
 };
+
+export const options = withCloudOptions("spike", baseOptions);
 
 export default function () {
   browseJourney();

@@ -67,6 +67,10 @@ export const checkoutJourney = () => {
   }
 
   if (ENV.applyCoupon) {
+    if (!business.couponCode) {
+      throw new Error("APPLY_COUPON=true requires TEST_COUPON_CODE or k6/data/business.json couponCode.");
+    }
+
     group("Apply Coupon", () => {
       const response = applyCoupon(business.couponCode, {
         expectedStatuses: [200, 400, 404]

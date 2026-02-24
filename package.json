@@ -10,6 +10,11 @@
     "test:spike": "k6 run k6/tests/spike.test.js",
     "test:soak": "k6 run k6/tests/soak.test.js",
     "test:cart-checkout": "k6 run k6/tests/cart-checkout.test.js",
-    "test:race": "k6 run k6/tests/race-condition.test.js"
+    "test:race": "k6 run k6/tests/race-condition.test.js",
+    "cloud:login": "k6 cloud login",
+    "cloud:run": "k6 cloud run",
+    "cloud:run:local": "k6 cloud run --local-execution",
+    "cloud:smoke": "k6 cloud run k6/tests/smoke.test.js",
+    "cloud:smoke:local": "k6 cloud run --local-execution k6/tests/smoke.test.js"
   }
 }

@@ -6,7 +6,7 @@ import { jsonOrNull } from "../lib/json.js";
 import { login } from "../services/auth.service.js";
 import { addCartItem } from "../services/cart.service.js";
 import { authorizePayment, placeOrder } from "../services/orders.service.js";
-import { setProductStock } from "../services/test-control.service.js";
+import { resetAllProductStocks, setProductStock } from "../services/test-control.service.js";
 
 const ALLOWED_RACE_STATUSES = [200, 400, 409, 422];
 const EXPECTED_REJECTION_STATUSES = [400, 409, 422];
@@ -18,20 +18,27 @@ export const raceInvariantViolation = new Rate("race_invariant_violation");
 
 const isExpectedRejection = (status) => EXPECTED_REJECTION_STATUSES.includes(status);
 const isAllowedRaceStatus = (status) => ALLOWED_RACE_STATUSES.includes(status);
+const requireTestApiKey = () => {
+  if (!ENV.testApiKey) {
+    throw new Error("TEST_API_KEY is required for race-condition setup/teardown.");
+  }
+
+  return ENV.testApiKey;
+};
 
 export const raceConditionSetup = () => {
   const business = getBusinessData();
   const productId = Number(ENV.raceProductId || business.products.raceStockProductId || 1);
+  const testApiKey = requireTestApiKey();
 
-  if (!ENV.testApiKey) {
-    console.warn("TEST_API_KEY is empty. Race setup skipped; set stock manually before running race test.");
-    return { productId };
-  }
-
-  const response = setProductStock(productId, 1, ENV.testApiKey);
+  const response = setProductStock(productId, 1, testApiKey);
   check(response, {
     "race setup set-stock status is 200": (r) => r.status === 200
   });
+
+  if (response.status !== 200) {
+    throw new Error(`Failed to set productId=${productId} stock to 1 before race test.`);
+  }
 
   return { productId };
 };
@@ -126,4 +133,18 @@ export const raceConditionJourney = (setupData) => {
   }
 
   sleep(ENV.thinkTimeSeconds);
+};
+
+export const raceConditionTeardown = (setupData) => {
+  const business = getBusinessData();
+  const testApiKey = requireTestApiKey();
+  const productId = Number(setupData?.productId || ENV.raceProductId || business.products.raceStockProductId || 1);
+  const response = resetAllProductStocks(testApiKey, ENV.raceResetStock);
+  check(response, {
+    "race teardown reset-stock status is 200": (r) => r.status === 200
+  });
+
+  if (response.status !== 200) {
+    throw new Error(`Failed to reset stock in teardown after race test for productId=${productId}.`);
+  }
 };

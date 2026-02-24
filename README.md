@@ -58,17 +58,64 @@ npm run test:cart-checkout
 npm run test:race
 ```
 
+## Grafana Cloud k6
+
+Login once:
+
+```bash
+npm run cloud:login
+```
+
+Or login with token:
+
+```bash
+k6 cloud login -t <YOUR_K6_CLOUD_TOKEN>
+```
+
+Run in cloud-managed infrastructure:
+
+```bash
+npm run cloud:smoke
+```
+
+Run locally but stream results to Grafana Cloud k6:
+
+```bash
+npm run cloud:smoke:local
+```
+
+Run any other test file in cloud:
+
+```bash
+npm run cloud:run -- k6/tests/load.test.js
+npm run cloud:run:local -- k6/tests/load.test.js
+```
+
 ## Environment Variables
 
 Copy `.env.example` and set values in your shell or CI.
 
-Important defaults:
+Required:
 
 - `APP_BASE_URL=https://folk-mart-1.onrender.com`
 - `API_BASE_URL=https://folk-mart.onrender.com`
-- `TEST_API_KEY=folkmartapikey`
+- `TEST_USER_USERNAME`
+- `TEST_USER_PASSWORD`
+- `TEST_USER_EMAIL`
+
+Race-condition only (required for setup/teardown stock control):
+
+- `TEST_API_KEY`
+- `RACE_PRODUCT_ID` (or keep value in `k6/data/business.json`)
+- `RACE_RESET_STOCK` (optional, resets all stocks to this value in teardown)
+
+Optional:
+
 - `THINK_TIME_SECONDS=1`
 - `APPLY_COUPON=false`
+- `TEST_COUPON_CODE`
+- `K6_CLOUD_PROJECT_ID=` (optional)
+- `K6_CLOUD_NAME_PREFIX=folk-mart`
 
 ## Core Thresholds
 
@@ -88,3 +135,6 @@ Race condition specific:
 - `APP_BASE_URL` is for page-level calls (e.g. `/`).
 - API performance flow uses `API_BASE_URL`.
 - Warm-up is handled manually as requested.
+- Cloud test names are auto-tagged via `options.cloud.name` with the prefix from `K6_CLOUD_NAME_PREFIX`.
+- Race test setup sets target product stock to `1`, and teardown always calls `/api/test/reset-stock`.
+- Missing required env values fail fast at runtime (no hardcoded secret defaults).

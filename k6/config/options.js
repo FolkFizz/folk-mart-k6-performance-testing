@@ -24,3 +24,25 @@ export const rampingOptions = ({
     thresholds
   };
 };
+
+const buildCloudOptions = (testName) => {
+  const projectId = envNumber("K6_CLOUD_PROJECT_ID", 0);
+  const namePrefix = envString("K6_CLOUD_NAME_PREFIX", "folk-mart");
+  const cloud = {
+    name: `${namePrefix}/${testName}`
+  };
+
+  if (projectId > 0) {
+    cloud.projectID = projectId;
+  }
+
+  return cloud;
+};
+
+export const withCloudOptions = (testName, baseOptions) => ({
+  ...baseOptions,
+  cloud: {
+    ...buildCloudOptions(testName),
+    ...(baseOptions.cloud || {})
+  }
+});

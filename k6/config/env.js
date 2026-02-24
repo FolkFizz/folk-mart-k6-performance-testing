@@ -33,11 +33,21 @@ export const envString = (key, fallback) => {
   return String(value);
 };
 
+export const envRequiredString = (key) => {
+  const value = envString(key, "");
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${key}`);
+  }
+
+  return value;
+};
+
 export const ENV = {
-  appBaseUrl: stripTrailingSlash(envString("APP_BASE_URL", "https://folk-mart-1.onrender.com")),
-  apiBaseUrl: stripTrailingSlash(envString("API_BASE_URL", "https://folk-mart.onrender.com")),
-  testApiKey: envString("TEST_API_KEY", "folkmartapikey"),
+  appBaseUrl: stripTrailingSlash(envRequiredString("APP_BASE_URL")),
+  apiBaseUrl: stripTrailingSlash(envRequiredString("API_BASE_URL")),
+  testApiKey: envString("TEST_API_KEY", ""),
   thinkTimeSeconds: envNumber("THINK_TIME_SECONDS", 1),
   applyCoupon: toBoolean(__ENV.APPLY_COUPON, false),
-  raceProductId: envNumber("RACE_PRODUCT_ID", 1)
+  raceProductId: envNumber("RACE_PRODUCT_ID", 1),
+  raceResetStock: envNumber("RACE_RESET_STOCK", Number.NaN)
 };

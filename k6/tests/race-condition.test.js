@@ -1,8 +1,9 @@
 import { envNumber, envString } from "../config/env.js";
+import { withCloudOptions } from "../config/options.js";
 import { RACE_THRESHOLDS } from "../config/thresholds.js";
-import { raceConditionJourney, raceConditionSetup } from "../scenarios/race-condition.scenario.js";
+import { raceConditionJourney, raceConditionSetup, raceConditionTeardown } from "../scenarios/race-condition.scenario.js";
 
-export const options = {
+const baseOptions = {
   scenarios: {
     race_oversell: {
       executor: "per-vu-iterations",
@@ -14,7 +15,10 @@ export const options = {
   thresholds: RACE_THRESHOLDS
 };
 
+export const options = withCloudOptions("race-condition", baseOptions);
+
 export const setup = raceConditionSetup;
+export const teardown = raceConditionTeardown;
 
 export default function (setupData) {
   raceConditionJourney(setupData);
