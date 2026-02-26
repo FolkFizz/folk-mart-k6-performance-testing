@@ -5,12 +5,19 @@ export const BASE_THRESHOLDS = {
 
 export const SMOKE_THRESHOLDS = {
   ...BASE_THRESHOLDS,
-  http_req_duration: ["p(95)<1500"]
+  "http_req_duration{type:read}": ["p(95)<800"],
+  "http_req_duration{type:write}": ["p(95)<1200"]
 };
 
 export const BROWSE_THRESHOLDS = {
   ...BASE_THRESHOLDS,
   "http_req_duration{type:read}": ["p(95)<800"]
+};
+
+export const PROFILE_THRESHOLDS = {
+  ...BASE_THRESHOLDS,
+  "http_req_duration{type:read}": ["p(95)<800"],
+  "http_req_duration{type:write}": ["p(95)<1200"]
 };
 
 export const CHECKOUT_THRESHOLDS = {

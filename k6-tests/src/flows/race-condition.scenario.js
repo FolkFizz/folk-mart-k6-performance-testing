@@ -3,10 +3,10 @@ import { Counter, Rate } from "k6/metrics";
 import { ENV } from "../config/env.js";
 import { getBusinessData, getUser } from "../lib/data.js";
 import { jsonOrNull } from "../lib/json.js";
-import { login } from "../services/auth.service.js";
-import { addCartItem } from "../services/cart.service.js";
-import { authorizePayment, placeOrder } from "../services/orders.service.js";
-import { resetAllProductStocks, setProductStock } from "../services/test-control.service.js";
+import { login } from "../lib/services/auth.service.js";
+import { addCartItem } from "../lib/services/cart.service.js";
+import { authorizePayment, placeOrder } from "../lib/services/orders.service.js";
+import { resetAllProductStocks, setProductStock } from "../lib/services/test-control.service.js";
 
 const ALLOWED_RACE_STATUSES = [200, 400, 409, 422];
 const EXPECTED_REJECTION_STATUSES = [400, 409, 422];
@@ -148,3 +148,4 @@ export const raceConditionTeardown = (setupData) => {
     throw new Error(`Failed to reset stock in teardown after race test for productId=${productId}.`);
   }
 };
+

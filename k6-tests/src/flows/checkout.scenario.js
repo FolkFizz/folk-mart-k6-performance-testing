@@ -2,10 +2,10 @@ import { check, group, sleep } from "k6";
 import { ENV } from "../config/env.js";
 import { getBusinessData, getUser } from "../lib/data.js";
 import { jsonOrNull } from "../lib/json.js";
-import { login } from "../services/auth.service.js";
-import { addCartItem, applyCoupon } from "../services/cart.service.js";
-import { authorizePayment, placeOrder } from "../services/orders.service.js";
-import { listProducts } from "../services/products.service.js";
+import { login } from "../lib/services/auth.service.js";
+import { addCartItem, applyCoupon } from "../lib/services/cart.service.js";
+import { authorizePayment, placeOrder } from "../lib/services/orders.service.js";
+import { listProducts } from "../lib/services/products.service.js";
 
 const pickInStockProductId = (payload) => {
   const products = Array.isArray(payload?.products) ? payload.products : [];
@@ -68,7 +68,7 @@ export const checkoutJourney = () => {
 
   if (ENV.applyCoupon) {
     if (!business.couponCode) {
-      throw new Error("APPLY_COUPON=true requires TEST_COUPON_CODE or k6/data/business.json couponCode.");
+      throw new Error("APPLY_COUPON=true requires TEST_COUPON_CODE or k6-tests/src/data/business.json couponCode.");
     }
 
     group("Apply Coupon", () => {
@@ -115,3 +115,5 @@ export const checkoutJourney = () => {
 
   sleep(ENV.thinkTimeSeconds);
 };
+
+

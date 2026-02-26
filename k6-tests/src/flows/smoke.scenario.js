@@ -2,10 +2,10 @@ import { check, group, sleep } from "k6";
 import { ENV } from "../config/env.js";
 import { getBusinessData, getUser } from "../lib/data.js";
 import { jsonOrNull } from "../lib/json.js";
-import { openHomePage } from "../services/app.service.js";
-import { login } from "../services/auth.service.js";
-import { listProducts } from "../services/products.service.js";
-import { getHealth } from "../services/system.service.js";
+import { openHomePage } from "../lib/services/app.service.js";
+import { login } from "../lib/services/auth.service.js";
+import { listProducts } from "../lib/services/products.service.js";
+import { getHealth } from "../lib/services/system.service.js";
 
 export const smokeJourney = () => {
   const user = getUser();
@@ -46,3 +46,4 @@ export const smokeJourney = () => {
 
   sleep(ENV.thinkTimeSeconds);
 };
+

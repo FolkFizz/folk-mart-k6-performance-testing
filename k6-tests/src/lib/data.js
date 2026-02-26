@@ -11,7 +11,7 @@ export const getUser = () => {
   const email = envString("TEST_USER_EMAIL", baseUser.email || "");
 
   if (!username || !password || !email) {
-    throw new Error("User test data is required. Set TEST_USER_* env vars or provide values in k6/data/users.json");
+    throw new Error("User test data is required. Set TEST_USER_* env vars or provide values in k6-tests/src/data/users.json");
   }
 
   return {
@@ -28,3 +28,4 @@ export const getBusinessData = () => {
     couponCode: envString("TEST_COUPON_CODE", data.couponCode)
   };
 };
+

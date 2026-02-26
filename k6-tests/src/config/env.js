@@ -23,6 +23,7 @@ const toBoolean = (value, fallback) => {
 };
 
 export const envNumber = (key, fallback) => toNumber(__ENV[key], fallback);
+export const envBool = (key, fallback) => toBoolean(__ENV[key], fallback);
 
 export const envString = (key, fallback) => {
   const value = __ENV[key];

@@ -1,6 +1,6 @@
 import { rampingOptions, withCloudOptions } from "../config/options.js";
-import { BROWSE_THRESHOLDS } from "../config/thresholds.js";
-import { browseJourney } from "../scenarios/browse.scenario.js";
+import { PROFILE_THRESHOLDS } from "../config/thresholds.js";
+import { profileJourney } from "../flows/profile.scenario.js";
 
 const baseOptions = rampingOptions({
   prefix: "STRESS",
@@ -8,11 +8,12 @@ const baseOptions = rampingOptions({
   defaultHold: "8m",
   defaultRampDown: "3m",
   defaultTargetVus: 60,
-  thresholds: BROWSE_THRESHOLDS
+  thresholds: PROFILE_THRESHOLDS
 });
 
 export const options = withCloudOptions("stress", baseOptions);
 
 export default function () {
-  browseJourney();
+  profileJourney(30);
 }
+

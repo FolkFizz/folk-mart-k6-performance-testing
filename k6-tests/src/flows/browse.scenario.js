@@ -2,8 +2,8 @@ import { check, group, sleep } from "k6";
 import { ENV } from "../config/env.js";
 import { getBusinessData } from "../lib/data.js";
 import { jsonOrNull } from "../lib/json.js";
-import { openHomePage } from "../services/app.service.js";
-import { getProductById, listProducts } from "../services/products.service.js";
+import { openHomePage } from "../lib/services/app.service.js";
+import { getProductById, listProducts } from "../lib/services/products.service.js";
 
 const pickProductId = (payload) => {
   const products = Array.isArray(payload?.products) ? payload.products : [];
@@ -56,3 +56,4 @@ export const browseJourney = () => {
 
   sleep(ENV.thinkTimeSeconds);
 };
+

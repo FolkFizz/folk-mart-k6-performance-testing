@@ -45,7 +45,7 @@ foreach ($line in $envLines) {
 }
 
 if (-not $ScriptPath) {
-  throw "Missing script path. Example: npm run cloud:run -- k6/tests/load.test.js"
+  throw "Missing script path. Example: npm run cloud:run -- k6-tests/src/scenarios/load.test.js"
 }
 
 $scriptTarget = $ScriptPath
@@ -77,3 +77,4 @@ try {
 finally {
   Pop-Location
 }
+

@@ -4,23 +4,26 @@
   "private": true,
   "description": "Minimal k6 performance test suite for Folk Mart",
   "scripts": {
-    "test:smoke": "k6 run k6/tests/smoke.test.js",
-    "test:load": "k6 run k6/tests/load.test.js",
-    "test:stress": "k6 run k6/tests/stress.test.js",
-    "test:spike": "k6 run k6/tests/spike.test.js",
-    "test:soak": "k6 run k6/tests/soak.test.js",
-    "test:cart-checkout": "k6 run k6/tests/cart-checkout.test.js",
-    "test:race": "k6 run k6/tests/race-condition.test.js",
+    "test:smoke": "k6 run k6-tests/src/scenarios/smoke.test.js",
+    "test:load": "k6 run k6-tests/src/scenarios/load.test.js",
+    "test:stress": "k6 run k6-tests/src/scenarios/stress.test.js",
+    "test:spike": "k6 run k6-tests/src/scenarios/spike.test.js",
+    "test:soak": "k6 run k6-tests/src/scenarios/soak.test.js",
+    "test:cart-checkout": "k6 run k6-tests/src/scenarios/cart-checkout.test.js",
+    "test:race": "k6 run k6-tests/src/scenarios/race-condition.test.js",
     "cloud:login": "k6 cloud login",
     "cloud:run": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/k6-cloud-run.ps1",
     "cloud:run:local": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/k6-cloud-run.ps1 -LocalExecution",
-    "cloud:smoke": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/k6-cloud-run.ps1 k6/tests/smoke.test.js",
-    "cloud:smoke:local": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/k6-cloud-run.ps1 k6/tests/smoke.test.js -LocalExecution",
-    "cloud:suite:quick": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/k6-cloud-suite.ps1 -Mode quick",
+    "cloud:smoke": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/k6-cloud-run.ps1 k6-tests/src/scenarios/smoke.test.js",
+    "cloud:smoke:local": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/k6-cloud-run.ps1 k6-tests/src/scenarios/smoke.test.js -LocalExecution",
+    "cloud:suite:quick": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/k6-cloud-suite.ps1 -Mode quick -LocalExecution",
     "cloud:suite:quick:dry": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/k6-cloud-suite.ps1 -Mode quick -DryRun",
     "cloud:suite:quick:local": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/k6-cloud-suite.ps1 -Mode quick -LocalExecution",
-    "cloud:suite:full": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/k6-cloud-suite.ps1 -Mode full",
+    "cloud:suite:quick:cloud": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/k6-cloud-suite.ps1 -Mode quick",
+    "cloud:suite:full": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/k6-cloud-suite.ps1 -Mode full -LocalExecution",
     "cloud:suite:full:dry": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/k6-cloud-suite.ps1 -Mode full -DryRun",
-    "cloud:suite:full:local": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/k6-cloud-suite.ps1 -Mode full -LocalExecution"
+    "cloud:suite:full:local": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/k6-cloud-suite.ps1 -Mode full -LocalExecution",
+    "cloud:suite:full:cloud": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/k6-cloud-suite.ps1 -Mode full"
   }
 }
+

@@ -1,5 +1,5 @@
 import http from "k6/http";
-import { ENV } from "../config/env.js";
+import { ENV } from "../../config/env.js";
 
 const isAbsoluteUrl = (path) => path.startsWith("http://") || path.startsWith("https://");
 
@@ -65,3 +65,4 @@ export const appGet = (path, options = {}) => http.get(buildUrl(ENV.appBaseUrl, 
 export const apiGet = (path, options = {}) => http.get(buildUrl(ENV.apiBaseUrl, path), buildApiParams(options));
 export const apiPost = (path, body, options = {}) =>
   http.post(buildUrl(ENV.apiBaseUrl, path), serializeBody(body), buildApiParams(options));
+
