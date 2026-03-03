@@ -7,6 +7,9 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+if (Get-Variable -Name PSNativeCommandUseErrorActionPreference -ErrorAction SilentlyContinue) {
+  $PSNativeCommandUseErrorActionPreference = $false
+}
 
 function Get-MetricValue {
   param(
@@ -146,15 +149,24 @@ try {
       $status = "dry-run"
       $exitCode = 0
     } else {
-      & k6 @k6Args 2>&1 | ForEach-Object {
-        $line = $_.ToString()
+      $k6Output = @()
+      try {
+        $k6Output = & k6 @k6Args 2>&1
+      } catch {
+        if ($_.Exception -and $_.Exception.Message) {
+          $k6Output += $_.Exception.Message
+        }
+      }
+
+      foreach ($entry in @($k6Output)) {
+        $line = $entry.ToString()
         Write-Host $line
         if (-not $runUrl -and $line -match "output:\s+(https://\S+)") {
           $runUrl = $matches[1]
         }
       }
 
-      $exitCode = $LASTEXITCODE
+      $exitCode = if ($LASTEXITCODE -is [int]) { $LASTEXITCODE } else { 1 }
       if ($exitCode -ne 0) {
         $status = "failed"
         $overallFailed = $true
