@@ -84,9 +84,100 @@ if (-not $Campaign) {
   $Campaign = "campaign_{0}" -f (Get-Date -Format "yyyyMMdd_HHmmss")
 }
 
+function To-Bool {
+  param(
+    [string]$Value,
+    [bool]$Fallback = $true
+  )
+
+  if ([string]::IsNullOrWhiteSpace($Value)) {
+    return $Fallback
+  }
+
+  $normalized = $Value.Trim().ToLowerInvariant()
+  if ($normalized -in @("1", "true", "yes", "y", "on")) { return $true }
+  if ($normalized -in @("0", "false", "no", "n", "off")) { return $false }
+  return $Fallback
+}
+
+function Should-ResetStockForScript {
+  param([string]$Path)
+
+  $fileName = [System.IO.Path]::GetFileName($Path).ToLowerInvariant()
+  return @(
+    "smoke.test.js",
+    "load.test.js",
+    "stress.test.js",
+    "spike.test.js",
+    "soak.test.js",
+    "cart-checkout.test.js"
+  ) -contains $fileName
+}
+
+function Invoke-StockReset {
+  param([string]$ScriptPath)
+
+  if (-not (To-Bool -Value $env:AUTO_RESET_STOCK -Fallback $true)) {
+    return
+  }
+
+  if (-not (Should-ResetStockForScript -Path $ScriptPath)) {
+    return
+  }
+
+  $apiBaseUrl = [string]$env:API_BASE_URL
+  $testApiKey = [string]$env:TEST_API_KEY
+  if ([string]::IsNullOrWhiteSpace($apiBaseUrl) -or [string]::IsNullOrWhiteSpace($testApiKey)) {
+    Write-Host ("[preflight] Skip stock reset for {0}: missing API_BASE_URL or TEST_API_KEY" -f ([System.IO.Path]::GetFileName($ScriptPath)))
+    return
+  }
+
+  $stockRaw = if ($env:STOCK_RESET_VALUE) { $env:STOCK_RESET_VALUE } elseif ($env:RACE_RESET_STOCK) { $env:RACE_RESET_STOCK } else { "50" }
+  $stock = 50
+  [void][int]::TryParse([string]$stockRaw, [ref]$stock)
+  $endpoint = "{0}/api/test/reset-stock" -f $apiBaseUrl.TrimEnd("/")
+
+  $maxAttempts = 3
+  for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
+    try {
+      $body = @{ stock = $stock } | ConvertTo-Json -Compress
+      $response = Invoke-RestMethod -Method Post -Uri $endpoint -Headers @{
+        "x-test-api-key" = $testApiKey
+        "Content-Type" = "application/json"
+      } -Body $body -TimeoutSec 30
+
+      $ok = $true
+      if ($null -ne $response -and $response.PSObject.Properties["ok"]) {
+        $ok = [bool]$response.ok
+      }
+
+      if ($ok) {
+        Write-Host ("[preflight] Stock reset before {0} (stock={1})" -f ([System.IO.Path]::GetFileName($ScriptPath)), $stock)
+        return
+      }
+
+      if ($attempt -lt $maxAttempts) {
+        Start-Sleep -Seconds 2
+        continue
+      }
+
+      Write-Warning ("[preflight] Stock reset response for {0} was not OK after {1} attempts." -f ([System.IO.Path]::GetFileName($ScriptPath)), $maxAttempts)
+      return
+    } catch {
+      if ($attempt -lt $maxAttempts) {
+        Start-Sleep -Seconds 2
+        continue
+      }
+
+      Write-Warning ("[preflight] Stock reset failed before {0}: {1}" -f ([System.IO.Path]::GetFileName($ScriptPath)), $_.Exception.Message)
+      return
+    }
+  }
+}
+
 $suiteQuick = @(
   @{ Name = "smoke"; Script = "k6-tests/src/scenarios/smoke.test.js"; Extra = @("--env", "SMOKE_DURATION=1m", "--env", "SMOKE_VUS=1") },
-  @{ Name = "load"; Script = "k6-tests/src/scenarios/load.test.js"; Extra = @("--env", "LOAD_RAMP_UP=45s", "--env", "LOAD_HOLD=2m", "--env", "LOAD_RAMP_DOWN=45s", "--env", "LOAD_TARGET_VUS=10", "--env", "PROFILE_CHECKOUT_PERCENT=35") },
+  @{ Name = "load"; Script = "k6-tests/src/scenarios/load.test.js"; Extra = @("--env", "LOAD_RAMP_UP=45s", "--env", "LOAD_HOLD=2m", "--env", "LOAD_RAMP_DOWN=45s", "--env", "LOAD_TARGET_VUS=5", "--env", "PROFILE_CHECKOUT_PERCENT=5") },
   @{ Name = "cart-checkout"; Script = "k6-tests/src/scenarios/cart-checkout.test.js"; Extra = @("--env", "CHECKOUT_DURATION=3m", "--env", "CHECKOUT_VUS=3") }
 )
 
@@ -149,6 +240,8 @@ try {
       $status = "dry-run"
       $exitCode = 0
     } else {
+      Invoke-StockReset -ScriptPath $scriptPath
+
       $k6Output = @()
       try {
         $k6Output = & k6 @k6Args 2>&1

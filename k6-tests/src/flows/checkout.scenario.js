@@ -13,23 +13,35 @@ const pickInStockProductId = (payload) => {
   return product ? Number(product.id) : 0;
 };
 
-export const checkoutJourney = () => {
-  const user = getUser();
-  const business = getBusinessData();
-  let productId = 0;
-  let paymentToken = "";
-  let canContinue = true;
+let hasAuthenticatedSession = false;
 
+const ensureAuthenticatedSession = (user) => {
+  if (hasAuthenticatedSession) {
+    return true;
+  }
+
+  let loginOk = false;
   group("Login", () => {
     const response = login(user.username, user.password);
     const payload = jsonOrNull(response);
-    canContinue = response.status === 200;
+    loginOk = response.status === 200 && payload?.ok === true;
 
     check(response, {
       "login status is 200": (r) => r.status === 200,
       "login response ok": () => payload?.ok === true
     });
   });
+
+  hasAuthenticatedSession = loginOk;
+  return loginOk;
+};
+
+export const checkoutJourney = () => {
+  const user = getUser();
+  const business = getBusinessData();
+  let productId = 0;
+  let paymentToken = "";
+  let canContinue = ensureAuthenticatedSession(user);
 
   if (!canContinue) {
     sleep(ENV.thinkTimeSeconds);
@@ -56,6 +68,9 @@ export const checkoutJourney = () => {
   group("Add To Cart", () => {
     const response = addCartItem(productId, 1);
     canContinue = response.status === 200;
+    if (response.status === 401) {
+      hasAuthenticatedSession = false;
+    }
     check(response, {
       "add to cart status is 200": (r) => r.status === 200
     });
@@ -75,6 +90,9 @@ export const checkoutJourney = () => {
       const response = applyCoupon(business.couponCode, {
         expectedStatuses: [200, 400, 404]
       });
+      if (response.status === 401) {
+        hasAuthenticatedSession = false;
+      }
       check(response, {
         "coupon status is acceptable": (r) => [200, 400, 404].includes(r.status)
       });
@@ -86,6 +104,9 @@ export const checkoutJourney = () => {
     const payload = jsonOrNull(response);
     paymentToken = String(payload?.token || "");
     canContinue = response.status === 200 && paymentToken.length > 0;
+    if (response.status === 401) {
+      hasAuthenticatedSession = false;
+    }
 
     check(response, {
       "authorize status is 200": (r) => r.status === 200,
@@ -106,6 +127,9 @@ export const checkoutJourney = () => {
       address: business.billing.address
     });
     const payload = jsonOrNull(response);
+    if (response.status === 401) {
+      hasAuthenticatedSession = false;
+    }
 
     check(response, {
       "place order status is 200": (r) => r.status === 200,
@@ -115,5 +139,3 @@ export const checkoutJourney = () => {
 
   sleep(ENV.thinkTimeSeconds);
 };
-
-

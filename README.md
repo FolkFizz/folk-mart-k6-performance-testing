@@ -75,52 +75,43 @@ Or login with token:
 k6 cloud login -t <YOUR_K6_CLOUD_TOKEN>
 ```
 
-Run in cloud-managed infrastructure:
+Run and stream smoke results to Grafana Cloud k6:
 
 ```bash
 npm run cloud:smoke
 ```
 
-Run locally but stream results to Grafana Cloud k6:
+Scenario shortcuts for Cloud runs:
 
 ```bash
-npm run cloud:smoke:local
+npm run cloud:load
+npm run cloud:stress
+npm run cloud:spike
+npm run cloud:soak
+npm run cloud:cart-checkout
+npm run cloud:race
 ```
 
-Run any other test file in cloud:
-
-```bash
-npm run cloud:run -- k6-tests/src/scenarios/load.test.js
-npm run cloud:run:local -- k6-tests/src/scenarios/load.test.js
-```
-
-Cloud scripts auto-load `.env` and pass variables to k6 runtime.
+All `cloud:*` commands above use local execution and stream metrics to Grafana Cloud.
 
 Simplest one-command suite (recommended for demos/recruiters):
 
 ```bash
-npm run cloud:suite:quick
+npm run cloud:quick
 ```
 
-This runs with `--local-execution` by default, streams to Grafana Cloud, and exports metrics for markdown reporting.
+This runs with `--local-execution`, streams to Grafana Cloud, and exports metrics for markdown reporting.
 
 Preview commands only (no real execution):
 
 ```bash
-npm run cloud:suite:quick:dry
+npm run cloud:quick:dry
 ```
 
 Run full suite:
 
 ```bash
-npm run cloud:suite:full
-```
-
-Run managed-cloud suite (without local execution):
-
-```bash
-npm run cloud:suite:quick:cloud
-npm run cloud:suite:full:cloud
+npm run cloud:full
 ```
 
 After each suite run, a report file is generated at:
