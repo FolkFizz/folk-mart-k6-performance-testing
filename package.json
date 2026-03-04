@@ -18,7 +18,7 @@
     "cloud:spike": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/k6-cloud-run.ps1 k6-tests/src/scenarios/spike.test.js -LocalExecution",
     "cloud:soak": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/k6-cloud-run.ps1 k6-tests/src/scenarios/soak.test.js -LocalExecution",
     "cloud:cart-checkout": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/k6-cloud-run.ps1 k6-tests/src/scenarios/cart-checkout.test.js -LocalExecution",
-    "cloud:race": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/k6-cloud-run.ps1 k6-tests/src/scenarios/race-condition.test.js -LocalExecution",
+    "cloud:race": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/k6-cloud-run.ps1 k6-tests/src/scenarios/race-condition.test.js -LocalExecution --env RACE_VUS=20 --env RACE_SPIKE_PRE_ALLOCATED_VUS=15 --env RACE_SPIKE_MAX_VUS=60",
     "cloud:quick": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/k6-cloud-suite.ps1 -Mode quick -LocalExecution",
     "cloud:full": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/k6-cloud-suite.ps1 -Mode full -LocalExecution",
     "cloud:quick:dry": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/k6-cloud-suite.ps1 -Mode quick -DryRun"
